@@ -882,6 +882,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
+						//Window.alert(xml);
+
 						FormDef formDef = XformParser.fromXform2FormDef(xml);
 
 						FormDef oldFormDef = centerPanel.getFormDef();
