@@ -12,41 +12,83 @@
     <meta name="gwt:module" content="purcforms"/>
     <title>PurcForms FormDesigner</title>
      <script type="text/javascript" language="javascript" src="FormDesigner/FormDesigner.nocache.js"></script>
+	 <script type="text/javascript">
+		function getQueryVariable(variable) { 
+			var query = window.location.search.substring(1); 
+			var vars = query.split("&"); 
+			for (var i=0;i<vars.length;i++) { 
+				var pair = vars[i].split("="); 
+				if (pair[0] == variable) { 
+				return pair[1]; 
+				} 
+			} 
+			
+			return '';
+			//alert('Query Variable ' + variable + ' not found'); 
+		}
+		
+		
+		function genStr(){
+			var text = "";
+			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+			for( var i=0; i < 10; i++ )
+				text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+			document.getElementById('formDefRefreshUrlSuffix').innerHTML= "getXform?random=" + text + "&amp;";
+			document.getElementById('formDefDownloadUrlSuffix').innerHTML= "getXform?random=" + text + "&amp;";
+			document.getElementById('formDefUploadUrlSuffix').innerHTML="saveXform?random="+text+"&amp;";
+		};
+	 </script>
    </head>
   <body>
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
     <div id="purcformsdesigner"></div>
     <div id="title" style="visibility:hidden;">PurcForms FormDesigner</div>
     <div id="rubberBand"></div>
-    <!-- <div id="formId" style="visibility:hidden;">18</div> -->
+    
+    <div id="formId" style="visibility:hidden;">1</div>
+    <script type="text/javascript">
+		var formId = getQueryVariable('surveyId');
+		if(formId.length > 0)
+			document.getElementById('formId').innerHTML = formId;
+		else
+			window.location = 'error.html';
+		
+	</script>
+	
+	
     <div id="dateTimeSubmitFormat" style="visibility:hidden;">yyyy-MM-dd hh:mm a</div>
     <div id="dateTimeDisplayFormat" style="visibility:hidden;">dd/MM/yyyy hh:mm a</div>
     <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm a</div>
     <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm a</div>
     <div id="dateSubmitFormat" style="visibility:hidden;">yyyy-MM-dd</div>
     <div id="dateDisplayFormat" style="visibility:hidden;">dd/MM/yyyy</div>
-    <div id="showLanguageTab" style="visibility:hidden;">1</div>
-    <div id="showXformsSourceTab" style="visibility:hidden;">1</div>
-    <div id="showLayoutXmlTab" style="visibility:hidden;">1</div>
-    <div id="showModelXmlTab" style="visibility:hidden;">1</div>
-    <div id="showJavaScriptTab" style="visibility:hidden;">1</div>
+    <div id="showLanguageTab" style="visibility:hidden;">0</div>
+    <div id="showXformsSourceTab" style="visibility:hidden;">0</div>
+    <div id="showLayoutXmlTab" style="visibility:hidden;">0</div>
+    <div id="showModelXmlTab" style="visibility:hidden;">0</div>
+    <div id="showJavaScriptTab" style="visibility:hidden;">0</div>
     <div id="allowBindEdit" style="visibility:hidden;">1</div>
     
     <div id="defaultFontSize" style="visibility:hidden;">16</div>
     <div id="defaultFontFamily" style="visibility:hidden;">Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif</div>
     
     <!-- <div id="entityIdName" style="visibility:hidden;">patientId</div> -->
-    <!-- <div id="formIdName" style="visibility:hidden;">formId</div> -->
+    <div id="formIdName" style="visibility:hidden;">formId</div>
     
-    <!-- <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xform&contentType=xml&</div> -->
-    <!-- <div id="formDefUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformUpload.form?target=xform&contentType=xml&</div> -->
-    <!-- <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div> -->
+    <div id="formDefDownloadUrlSuffix" style="visibility:hidden;"></div>	
+    <div id="formDefUploadUrlSuffix" style="visibility:hidden;"></div>
+    <div id="formDefRefreshUrlSuffix" style="visibility:hidden;"></div>
+	<script type="text/javascript">
+		genStr();
+	</script>
     
     <!-- <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&</div> -->
     <!-- <div id="formDataUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformDataUpload.form</div> -->
     <!-- <div id="afterSubmitUrlSuffix" style="visibility:hidden;">patientDashboard.form?</div> -->
     
-    <!-- <div id="loading"><img src="loading.gif">Loading app�</div> -->
+    <!-- <div id="loading"><img src="loading.gif">Loading appï¿½</div> -->
     
     <div id="localeList" style="visibility:hidden;">en:English,fr:French,gr:German,swa:Swahili,lug:Luganda</div>
     
@@ -190,9 +232,9 @@
     			newForm: "New Form",
     			page: "Page",
     			option: "Option",
-    			noDataFound: "No data found.",
+    			noDataFound: "This appears to be a new survey. Please use this FormBuilder to design the survey and remember to save your changes",
 
-    			formSaveSuccess: "Form saved successfully",
+    			formSaveSuccess: "Your Form has been saved Successfully, You can proceed to design the Form or Go back to the Surveys by Click the Link 'Go Back to Survey' or the Survey Tab",
     			selectSaveItem: "Please select the item to save.",
     			deleteAllWidgetsFirst: "Please first delete all the widgets.",
     			deleteAllTabWidgetsFirst: "This tab has one or more widgets, please first delete them",
@@ -337,6 +379,7 @@
  		  };
 
 		  function isUserAuthenticated(){
+		  	  authenticationCallback(true);
 			  return true; //Not expected to be used in the design mode.
 		  }
 

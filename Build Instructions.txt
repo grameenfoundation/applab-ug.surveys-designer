@@ -2,7 +2,7 @@ Build Instructions
 ------------------
 
 - Check out products/surveys.designer and add it as an Eclipse project
-- Check out purcforms/SharedLib [r233] (Repository Path: /ckw/tags/externals/purcforms/SharedLib-r233) to a folder called SharedLib that sits in the same directory as the surveys.designer folder
+- Check out purcforms/surveys.designer.sharedlib to a folder called surveys.designer.sharedlib that sits in the same directory as the surveys.designer folder
 - Add it as an eclipse project called SharedLib
 - From eclipse Package Explorer, right click on surveys.designer/build.xml and go to "Run As">"2 Ant Build"
 - From the pop up window, check the option "gwtc" and uncheck the option "dev[default]" then finish by clicking "Apply" 
