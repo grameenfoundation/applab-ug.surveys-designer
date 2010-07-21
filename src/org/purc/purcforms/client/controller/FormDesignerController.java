@@ -341,6 +341,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	private void saveTheForm() {
 		final FormDef obj = leftPanel.getSelectedForm();
+		
+		
 		if(obj.isReadOnly())
 			;//return; //TODO I think we should allow saving of form text and layout
 
@@ -351,7 +353,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		
 		if(!leftPanel.isValidForm())
 			return;
-
+		
 		if(Context.inLocalizationMode()){
 			saveLanguageText(formSaveListener == null && isOfflineMode());
 			return;
@@ -359,7 +361,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 		FormUtil.dlg.setText(LocaleText.get("savingForm"));
 		FormUtil.dlg.center();
-
+		
+		//this.formId = obj.getId();
+		
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
@@ -373,13 +377,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					else{
 						formDef.updateDoc(false);
 						xml = XmlUtil.fromDoc2String(formDef.getDoc());
+					
 					}
 
 					xml = XformUtil.normalizeNameSpace(formDef.getDoc(), xml);
 
 					xml = FormDesignerUtil.formatXml(xml);
 
-					formDef.setXformXml(xml);
+					/*formDef.setXformXml(xml);
 					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 					centerPanel.buildLayoutXml();
 					//formDef.setLayout(centerPanel.getLayoutXml());
@@ -387,10 +392,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					centerPanel.saveLanguageText(false);
 					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
 
-					centerPanel.saveJavaScriptSource();
+					centerPanel.saveJavaScriptSource();*/
 					
 					if(!isOfflineMode() && formSaveListener == null)
-						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
+						saveForm(xml);
+						//saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
 
 					boolean saveLocaleText = false;
 					if(formSaveListener != null)
@@ -756,7 +762,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefUploadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
-
+		
+		//Window.alert("Form Id to be saved is:"+Integer.toString(this.formId));
+		
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
 
 		try{
@@ -790,6 +798,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		catch(RequestException ex){
 			FormUtil.displayException(ex);
 		}
+	}
+	
+	public void saveForm(String xformXml){
+		saveForm(xformXml, null, null, null);
 	}
 
 	public void saveLocaleText(String languageXml){
@@ -883,7 +895,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
 						//Window.alert(xml);
-
 						FormDef formDef = XformParser.fromXform2FormDef(xml);
 
 						FormDef oldFormDef = centerPanel.getFormDef();
@@ -1033,6 +1044,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormDef formDef = leftPanel.getSelectedForm();
 					if(formDef != null)
 						selFormId = formDef.getId();
+				
 
 					List<FormDef> forms = leftPanel.getForms();
 					if(forms != null && forms.size() > 0){
