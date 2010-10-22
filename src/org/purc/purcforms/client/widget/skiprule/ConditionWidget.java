@@ -201,6 +201,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		if(condition.getValue() == null)
 			return null;
+		else
+			condition.setBindingChangeListener(questionDef);
 
 		return condition;
 	}
