@@ -366,6 +366,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 		if(Context.inLocalizationMode()){
 			saveLanguageText(formSaveListener == null && isOfflineMode());
+
+			/*DeferredCommand.addCommand(new Command(){
+				public void execute() {
+					if(FormUtil.isJavaRosaSaveFormat()){
+						ItextBuilder.build(obj, Context.getLocale());
+						String xml = XmlUtil.fromDoc2String(obj.getDoc());
+						centerPanel.setXformsSource(FormDesignerUtil.formatXml(xml), formSaveListener == null && isOfflineMode());
+					}
+			  	}
+		    });*/
+
 			return;
 		}
 
@@ -394,7 +405,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 							if(FormUtil.isJavaRosaSaveFormat())
 								ItextBuilder.build(formDef);
-							
+
 							xml = XmlUtil.fromDoc2String(formDef.getDoc());
 						}
 					}
@@ -646,7 +657,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 			if(leftPanel.getSelectedForm().isReadOnly())
 				return;
-			
+
 			if(formId != null){
 				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();
