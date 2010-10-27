@@ -822,13 +822,21 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 			builder.sendRequest(xml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
+					
+					FormUtil.dlg.hide();
 
-					if(response.getStatusCode() != Response.SC_OK){
-						FormUtil.displayReponseError(response);
+					int statusCode = response.getStatusCode();
+
+					if(statusCode != Response.SC_OK){
+
+						if(statusCode == Response.SC_NOT_IMPLEMENTED)
+							Window.alert(LocaleText.get("notImplementedMessage"));
+						else
+							FormUtil.displayReponseError(response);
+
 						return;
 					}
 
-					FormUtil.dlg.hide();
 					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
@@ -939,9 +947,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						FormDef oldFormDef = centerPanel.getFormDef();
 
 						//If we are in offline mode, we completely overwrite the form 
-						//with the contents of the xforms source tab.
-						//if(!isOfflineMode())
-						formDef.refresh(oldFormDef);
+						//with the contents of the xforms source tab, as a way of someone manually
+						//changing the xform.
+						if(!isOfflineMode())
+							formDef.refresh(oldFormDef);
 
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
