@@ -47,7 +47,9 @@
     <div id="title" style="visibility:hidden;">PurcForms FormDesigner</div>
     <div id="rubberBand"></div>
 
-    <div id="formId" style="visibility:hidden;">1</div>
+   <div id="formId" style="visibility:hidden;">1</div>
+   <div id="readOnly" style="visibility:hidden;">false</div>
+    
     <script type="text/javascript">
                 var formId = getQueryVariable('surveyId');
                 if(formId.length > 0)
@@ -55,7 +57,14 @@
                 else
                         window.location = 'error.html';
 
-        </script>
+                var status = getQueryVariable('status');
+
+                if(status != null){
+                	status = status.toLowerCase();
+                	if(status == 'completed' || status == 'published')
+                    	document.getElementById('readOnly').innerHTML = "true";
+                }
+    </script>
 
 
     <div id="dateTimeSubmitFormat" style="visibility:hidden;">yyyy-MM-dd hh:mm a</div>
