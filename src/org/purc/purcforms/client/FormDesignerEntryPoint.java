@@ -94,7 +94,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			//with that id in the designer.
 			s = FormUtil.getFormId();
 			if(s != null)
-				designer.loadForm(Integer.parseInt(s));
+				designer.loadForm(getFormId(s));
 			
 
 			// Call the window resized handler to get the initial sizes setup. Doing
@@ -115,6 +115,15 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 		}
 		catch(Exception ex){
 			FormUtil.displayException(ex);
+		}
+	}
+	
+	private Integer getFormId(String sId){
+		try{
+			return Integer.parseInt(sId);
+		}
+		catch(Exception ex){
+			return 1;
 		}
 	}
 	
