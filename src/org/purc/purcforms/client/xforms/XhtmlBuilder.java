@@ -17,76 +17,85 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class XhtmlBuilder {
 
-	/**
-	 * All methods in this class are static and hence we expect no external
-	 * Instantiation of this class.
-	 */
-	private XhtmlBuilder(){
+    /**
+     * All methods in this class are static and hence we expect no external
+     * Instantiation of this class.
+     */
+    private XhtmlBuilder(){
 
-	}
-	
-	/**
-	 * Converts a form definition object to an XHTML document object.
-	 * 
-	 * @param formDef the form definition object.
-	 * @return the xhtml document object.
-	 */
-	public static Document fromFormDef2XhtmlDoc(FormDef formDef){
-		Document prevdoc = formDef.getDoc();
+    }
 
-		Document doc = XMLParser.createDocument();
-		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
+    /**
+     * Converts a form definition object to an XHTML document object.
+     * 
+     * @param formDef the form definition object.
+     * @return the xhtml document object.
+     */
+    public static Document fromFormDef2XhtmlDoc(FormDef formDef){
+        Document prevdoc = formDef.getDoc();
 
-		Element htmlNode = doc.createElement("h:html");
-		//formDef.setXformsNode(htmlNode);
+        Document doc = XMLParser.createDocument();
+        doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 
-		htmlNode.setAttribute("xmlns:h", "http://www.w3.org/1999/xhtml");
-		htmlNode.setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
-		htmlNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
-		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
+        Element htmlNode = doc.createElement("h:html");
+        //formDef.setXformsNode(htmlNode);
 
-		doc.appendChild(htmlNode);
+        htmlNode.setAttribute("xmlns:h", "http://www.w3.org/1999/xhtml");
+        htmlNode.setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
+        htmlNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
+        htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 
-		//add head
-		Element headNode =  doc.createElement("h:head");
-		htmlNode.appendChild(headNode);
+        doc.appendChild(htmlNode);
 
-		//add title
-		Element titleNode =  doc.createElement("h:title");
-		titleNode.appendChild(doc.createTextNode(formDef.getName()));
-		headNode.appendChild(titleNode);
+        //add head
+        Element headNode =  doc.createElement("h:head");
+        htmlNode.appendChild(headNode);
 
-		//add body
-		Element bodyNode =  doc.createElement("h:body");
-		htmlNode.appendChild(bodyNode);
+        //add title
+        Element titleNode =  doc.createElement("h:title");
+        titleNode.appendChild(doc.createTextNode(formDef.getName()));
+        headNode.appendChild(titleNode);
 
-		//add model
-		Element modelNode =  doc.createElement(XformConstants.NODE_NAME_MODEL);
-		headNode.appendChild(modelNode);
+        //add body
+        Element bodyNode =  doc.createElement("h:body");
+        htmlNode.appendChild(bodyNode);
 
-		//we do not want to lose anything that the model could have had which we do not build when
-		//creating an xform from scratch
-		XformBuilder.buildXform(formDef,doc,bodyNode,modelNode);
+        //add model
+        Element modelNode =  doc.createElement(XformConstants.NODE_NAME_MODEL);
+        headNode.appendChild(modelNode);
 
-		XformUtil.copyModel(prevdoc,doc);
-		
-		return doc;
-	}
-	
-	/**
-	 * Converts a form definition object to XHTML.
-	 * 
-	 * @param formDef the form definition object.
-	 * @return the xhtml.
-	 */
-	public static String fromFormDef2Xhtml(FormDef formDef){
-		Document doc = fromFormDef2XhtmlDoc(formDef);
-		formDef.setDoc(doc);
-		formDef.setXformsNode(doc.getDocumentElement());
-		
-		if(FormUtil.isJavaRosaSaveFormat())
-			ItextBuilder.build(formDef);
-		
-		return XmlUtil.fromDoc2String(doc);
-	}
+        //we do not want to lose anything that the model could have had which we do not build when
+        //creating an xform from scratch
+        XformBuilder.buildXform(formDef,doc,bodyNode,modelNode);
+
+        XformUtil.copyModel(prevdoc,doc);
+
+        return doc;
+    }
+
+    /**
+     * Converts a form definition object to XHTML.
+     * 
+     * @param formDef the form definition object.
+     * @return the xhtml.
+     */
+    public static String fromFormDef2Xhtml(FormDef formDef){
+        Document prevDoc = formDef.getDoc();
+        Document doc = fromFormDef2XhtmlDoc(formDef);
+        formDef.setDoc(doc);
+        formDef.setXformsNode(doc.getDocumentElement());
+
+        if(FormUtil.isJavaRosaSaveFormat())
+            ItextBuilder.build(formDef);
+        
+        Element modelNode = formDef.getModelNode();
+        if(modelNode != null && prevDoc != null){
+            String prefix = modelNode.getPrefix();
+            String ns = prevDoc.getDocumentElement().getNamespaceURI();
+            if(ns != null && ns.trim().length() > 0)
+                doc.getDocumentElement().setAttribute("xmlns:" + prefix, ns);
+        }
+
+        return XmlUtil.fromDoc2String(doc);
+    }
 }
