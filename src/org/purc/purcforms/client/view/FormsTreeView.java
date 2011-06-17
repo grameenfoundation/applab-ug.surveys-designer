@@ -1468,7 +1468,7 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
                 return;
 
             for(int index = 0; index < repeatQtnsDef.getQuestionsCount(); index++)
-                rebuildQuestionBindings(index + 1, repeatQtnsDef.getQuestionAt(index));
+                rebuildQuestionBindings(Integer.parseInt(questionDef.getBinding().substring(1)) + index + 1, repeatQtnsDef.getQuestionAt(index));
         }
     }
 }
