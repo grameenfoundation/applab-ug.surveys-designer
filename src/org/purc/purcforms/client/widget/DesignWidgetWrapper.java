@@ -15,6 +15,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
+import com.google.gwt.event.dom.client.HasAllTouchHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -27,6 +28,14 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -43,6 +52,7 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Element;
 
@@ -54,7 +64,7 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListener, HasAllMouseHandlers{
+public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListener, HasAllMouseHandlers, HasAllTouchHandlers {
 
 	private WidgetSelectionListener widgetSelectionListener;
 	private PopupPanel popup;
@@ -350,7 +360,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			panel.remove(0);
 			panel.add(widget);
 			if(!(widget instanceof TabBar))
-				restorePosition();
+				refreshPosition();
 			return true;
 		}
 		return false;
@@ -433,8 +443,12 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return WidgetEx.WIDGET_TYPE_TEXTBOX;
 		else if(widget instanceof Label)
 			return WidgetEx.WIDGET_TYPE_LABEL;
-		else if(widget instanceof Image)
+		else if(widget instanceof Image){
+			if(getParent().getParent().getParent() instanceof VerticalPanel)
+				return WidgetEx.WIDGET_TYPE_LOGO;
+			
 			return WidgetEx.WIDGET_TYPE_IMAGE;
+		}
 		else if(widget instanceof Hyperlink)
 			return WidgetEx.WIDGET_TYPE_VIDEO_AUDIO;
 		else if(widget instanceof DesignGroupWidget)
@@ -925,7 +939,37 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 	public HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler) {
 		return addDomHandler(handler, MouseWheelEvent.getType());
 	}
+	
+	public HandlerRegistration addTouchStartHandler(TouchStartHandler handler) {
+		return addDomHandler(handler, TouchStartEvent.getType());
+	}
+	
+	public HandlerRegistration addTouchMoveHandler(TouchMoveHandler handler) {
+		return addDomHandler(handler, TouchMoveEvent.getType());
+	}
+	
+	public HandlerRegistration addTouchEndHandler(TouchEndHandler handler) {
+		return addDomHandler(handler, TouchEndEvent.getType());
+	}
+	
+	public HandlerRegistration addTouchCancelHandler(TouchCancelHandler handler) {
+		return addDomHandler(handler, TouchCancelEvent.getType());
+	}
+	
+	public boolean supportsTabIndex(){
+		if(widget instanceof RadioButton || widget instanceof CheckBox || widget instanceof Button || 
+				widget instanceof ListBox || widget instanceof TextArea || widget instanceof DatePickerEx || 
+				widget instanceof DateTimeWidget || widget instanceof TextBox || widget instanceof DesignGroupWidget)
+			return true;
+		
+		return false;
+	}
 
+	public void refreshPosition(){
+		setTop(getTop());
+		setLeft(getLeft());
+	}
+	
 	/*public void setForeColor(String color){
 		super.setForeColor(color);
 
