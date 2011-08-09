@@ -263,15 +263,6 @@ public class FormDesignerUtil {
 	}-*/;
 	
 	public static boolean inReadOnlyMode(){
-		/*boolean readOnly = false;
-		String s = FormUtil.getDivValue("readOnly", false);
-		if(s != null && s.trim().length() > 0){
-			if("1".equals(s) || "true".equals(s))
-				readOnly = true;
-		}
-		
-		return readOnly;*/
-		
 		return FormUtil.isReadOnlyMode();
 	}
 }

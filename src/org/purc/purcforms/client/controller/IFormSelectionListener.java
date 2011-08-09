@@ -1,7 +1,5 @@
 package org.purc.purcforms.client.controller;
 
-import com.google.gwt.user.client.ui.TreeItem;
-
 
 /**
  * Interface for listening to form item (form,page,question or question option) 
@@ -17,5 +15,5 @@ public interface IFormSelectionListener {
 	 * 
 	 * @param formItem the item which has been selected.
 	 */
-	public void onFormItemSelected(Object formItem, TreeItem treeItem);
+	public void onFormItemSelected(Object formItem);
 }

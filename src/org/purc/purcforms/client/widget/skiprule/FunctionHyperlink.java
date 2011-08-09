@@ -122,11 +122,11 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 	/**
 	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
-	public void onItemSelected(Object sender, Object item, boolean userAction) {
+	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof SelectItemCommand){
 			popup.hide();
 			setText((String)item);
-			itemSelectionListener.onItemSelected(this, fromFunctionText2Value((String)item), userAction);
+			itemSelectionListener.onItemSelected(this, fromFunctionText2Value((String)item));
 		}
 	}
 	

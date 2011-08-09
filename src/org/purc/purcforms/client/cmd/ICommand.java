@@ -9,7 +9,5 @@ package org.purc.purcforms.client.cmd;
  */
 public interface ICommand {
 	String getName();
-	void undo();
-	void redo();
-	boolean isWidgetCommand();
+	void execute();
 }

@@ -24,7 +24,7 @@ public class SelectItemCommand implements Command{
 	 * @see com.google.gwt.user.client.Command#execute()
 	 */
 	public void execute() {
-		itemSelectionListener.onItemSelected(this, item, false);
+		itemSelectionListener.onItemSelected(this, item);
 	}
 
 	

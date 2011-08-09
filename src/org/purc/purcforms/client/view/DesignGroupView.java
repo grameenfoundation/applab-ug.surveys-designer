@@ -7,14 +7,6 @@ import java.util.List;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.LeftPanel.Images;
-import org.purc.purcforms.client.cmd.ChangeWidgetCmd;
-import org.purc.purcforms.client.cmd.ChangeWidgetTypeCmd;
-import org.purc.purcforms.client.cmd.CommandList;
-import org.purc.purcforms.client.cmd.DeleteWidgetCmd;
-import org.purc.purcforms.client.cmd.GroupWidgetsCmd;
-import org.purc.purcforms.client.cmd.InsertWidgetCmd;
-import org.purc.purcforms.client.cmd.MoveWidgetCmd;
-import org.purc.purcforms.client.cmd.ResizeWidgetCmd;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
@@ -59,7 +51,6 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -80,10 +71,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	/** The popup panel for the widget context menu. */
 	protected PopupPanel widgetPopup;
 
-	/** The cursor position x coordinate. */
+	/** The cursor position x cordinate. */
 	protected int x;
 
-	/** The cursor position y coordinate. */
+	/** The cursor position y cordinate. */
 	protected int y;
 
 	protected int clipboardLeftMostPos;
@@ -170,11 +161,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
-	public void onWidgetSelected(Widget widget, AbsolutePanel panel, boolean multipleSel){
-		selectPanel(panel);
-		this.onWidgetSelected(widget, multipleSel);
-	}
-
 	public void onWidgetSelected(Widget widget, boolean multipleSel){
 
 		//Some widgets like check boxes and buttons may not have sizes set yet
@@ -182,14 +168,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		if(widget != null && widget == editWidget)
 			return;
 
-		//Right clicking on a widget when we have more than one item selected should not turn off selection.
-		if(multipleSel && selectedDragController.getSelectedWidgetCount() > 1)
-			return;
-
-		if(widget == null){
-			if(!(selectedDragController.getSelectedWidgetCount() > 1))
-				selectedDragController.clearSelection();
-		}
+		if(widget == null)
+			selectedDragController.clearSelection();
 		else if(widget instanceof DesignWidgetWrapper && !(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)){
 			String s = ((DesignWidgetWrapper)widget).getWidth();
 			if(!"100%".equals(s)){
@@ -207,11 +187,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 				//Deselect and stop editing of any widget in group boxes
 				//TODO Doesnt this slow us a bit?
-				if(widget instanceof DesignWidgetWrapper &&  ((DesignWidgetWrapper)widget).getWidgetSelectionListener() instanceof DesignSurfaceView){
-					if(!(selectedDragController.isWidgetSelected(widget) && selectedDragController.getSelectedWidgetCount() > 1)){
-						clearGroupBoxSelection();
-					}
-				}
+				if(widget instanceof DesignWidgetWrapper &&  ((DesignWidgetWrapper)widget).getWidgetSelectionListener() instanceof DesignSurfaceView)
+					clearGroupBoxSelection();
 
 				//Deselect any previously selected widgets in groupbox
 				selectedDragController.selectWidget(widget); //TODO Test this and make sure it does not introduce bugs
@@ -224,7 +201,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected void cutWidgets(){
-		copyWidgets(true, true, null);
+		copyWidgets(true);
 	}
 
 	/**
@@ -238,10 +215,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				return; //We do not allow nested group boxes
 		}*/
 
-		CommandList commands = new CommandList(this);
-
-		//cutWidgets();
-		copyWidgets(true, false, commands);
+		cutWidgets();
 
 		x = clipboardLeftMostPos + selectedPanel.getAbsoluteLeft() ;
 		y = clipboardTopMostPos + selectedPanel.getAbsoluteTop();
@@ -249,26 +223,18 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		DesignWidgetWrapper widget = addNewGroupBox(false);
 		DesignGroupView designGroupView = (DesignGroupView)widget.getWrappedWidget();
 		designGroupView.updateCursorPos(x+20, y+45);
-		designGroupView.pasteWidgets(true, false);
+		designGroupView.pasteWidgets(true);
 		selectedDragController.clearSelection();
 		designGroupView.clearSelection();
 		widget.setHeightInt(FormUtil.convertDimensionToInt(rubberBandHeight)+35);
 		widget.setWidth(rubberBandWidth);
 
 		selectedDragController.selectWidget(widget);
-		widgetSelectionListener.onWidgetSelected(((DesignGroupWidget)designGroupView).getHeaderLabel(), false);
-
-		Context.getCommandHistory().add(new GroupWidgetsCmd(widget, widget.getLayoutNode(), commands, this));
+		widgetSelectionListener.onWidgetSelected(((DesignGroupWidget)designGroupView).getHeaderLabel(),false);
 	}
 
 	protected void copyWidgets(boolean remove){
-		copyWidgets(remove, true, null);
-	}
-
-	protected void copyWidgets(boolean remove, boolean storeHistory, CommandList commandsParam){
 		Context.clipBoardWidgets.clear();
-
-		CommandList commands = new CommandList(this);
 
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
@@ -287,13 +253,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 
 			if(remove){ //cut{
-
-				if(storeHistory)
-					commands.add(new DeleteWidgetCmd(widget, widget.getLayoutNode(), this));
-
-				if(commandsParam != null)
-					commandsParam.add(new DeleteWidgetCmd(widget, widget.getLayoutNode(), this));
-
 				tryUnregisterDropController(widget);
 				selectedPanel.remove(widget);
 			}
@@ -304,9 +263,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			Context.clipBoardWidgets.add(widget);
 		}
-
-		if(commands.size() > 0)
-			Context.getCommandHistory().add(commands);
 	}
 
 	private void tryUnregisterDropController(DesignWidgetWrapper widget){
@@ -339,16 +295,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected void pasteWidgets(boolean afterContextMenu){
-		pasteWidgets(afterContextMenu, true);
-	}
-
-	protected void pasteWidgets(boolean afterContextMenu, boolean storeHistory){
 		int xOffset = x - clipboardLeftMostPos;
 		int yOffset = y - clipboardTopMostPos;
 
 		selectedDragController.clearSelection();
-
-		CommandList commands = new CommandList(this);
 
 		for(int i=0; i<Context.clipBoardWidgets.size(); i++){
 			DesignWidgetWrapper widget = new DesignWidgetWrapper(Context.clipBoardWidgets.get(i),images);
@@ -394,29 +344,18 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			if(i == 0 && Context.clipBoardWidgets.size() == 1)
 				widgetSelectionListener.onWidgetSelected(widget,true);
-
-			if(storeHistory)
-				commands.add(new InsertWidgetCmd(widget, widget.getLayoutNode(), this));
 		}
 
 		if(Context.clipBoardWidgets.size() > 1)
 			widgetSelectionListener.onWidgetSelected(null,true);
-
-		if(commands.size() > 0)
-			Context.getCommandHistory().add(commands);
 	}
 
 	protected boolean deleteWidgets(){
 		if(!Window.confirm(LocaleText.get("deleteWidgetPrompt")))
 			return true;
 
-		CommandList commands = new CommandList(this);
-
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
-
-			commands.add(new DeleteWidgetCmd(widget, widget.getLayoutNode(), this));
-
 			if(widget.getLayoutNode() != null)
 				widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
 			tryUnregisterDropController(widget);
@@ -425,17 +364,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		selectedDragController.clearSelection();
 
-		Context.getCommandHistory().add(commands);
-
 		return false;
-	}
-
-	public void deleteWidget(DesignWidgetWrapper widget, AbsolutePanel panel){
-		//Added only for support of undo redo. So should be refactored.
-		widget.refreshPosition();
-		selectPanel(panel);
-		selectedPanel.remove(widget);
-		selectedDragController.clearSelection();
 	}
 
 	public void copyItem() {
@@ -611,17 +540,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
-		int left = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getLeftInt();
-		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new MoveWidgetCmd(widget, widget.getLeftInt() - left, 0, this));
-			widget.setLeftInt(left);
-		}
-
-		Context.getCommandHistory().add(commands);
+		String left = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getLeft();
+		for(int index = 0; index < widgets.size(); index++)
+			((DesignWidgetWrapper)widgets.get(index)).setLeft(left);
 
 		return true;
 	}
@@ -642,18 +564,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
 		int total = widget.getElement().getScrollWidth() + FormUtil.convertDimensionToInt(widget.getLeft());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new MoveWidgetCmd(widget, widget.getLeftInt() - (total - widget.getElement().getScrollWidth()), 0, this));
 			widget.setLeft((total - widget.getElement().getScrollWidth()+PurcConstants.UNITS));
 		}
-
-		Context.getCommandHistory().add(commands);
 
 		return true;
 	}
@@ -674,17 +591,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
-		int top = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getTopInt();
-		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new MoveWidgetCmd(widget, 0, widget.getTopInt() - top, this));
-			widget.setTopInt(top);
-		}
-
-		Context.getCommandHistory().add(commands);
+		String top = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getTop();
+		for(int index = 0; index < widgets.size(); index++)
+			((DesignWidgetWrapper)widgets.get(index)).setTop(top);
 
 		return true;
 	}
@@ -705,18 +615,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
 		int total = widget.getElement().getScrollHeight() + FormUtil.convertDimensionToInt(widget.getTop());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new MoveWidgetCmd(widget, 0, widget.getTopInt() - (total - widget.getElement().getScrollHeight()), this));
 			widget.setTop((total - widget.getElement().getScrollHeight()+PurcConstants.UNITS));
 		}
-
-		Context.getCommandHistory().add(commands);
 
 		return true;
 	}
@@ -737,17 +642,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
-		int height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeightInt();
-		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new ResizeWidgetCmd(widget, 0, 0, 0, widget.getHeightInt() - height, this));
-			widget.setHeightInt(height);
-		}
-
-		Context.getCommandHistory().add(commands);
+		String height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeight();
+		for(int index = 0; index < widgets.size(); index++)
+			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
 
 		return true;
 	}
@@ -768,17 +666,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
-		int width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidthInt();
-		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new ResizeWidgetCmd(widget, 0, 0, widget.getWidthInt() - width, 0, this));
-			widget.setWidthInt(width);
-		}
-
-		Context.getCommandHistory().add(commands);
+		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
+		for(int index = 0; index < widgets.size(); index++)
+			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
 
 		return true;
 	}
@@ -799,19 +690,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return false;
 		}
 
-		CommandList commands = new CommandList(this);
-
 		//align according to the last selected item.
-		int width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidthInt();
-		int height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeightInt();
+		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
+		String height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeight();
 		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-			commands.add(new ResizeWidgetCmd(widget, 0, 0, widget.getWidthInt() - width, widget.getHeightInt() - height, this));
-			widget.setWidthInt(width);
-			widget.setHeightInt(height);
+			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
+			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
 		}
-
-		Context.getCommandHistory().add(commands);
 
 		return true;
 	}
@@ -966,7 +851,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//	return;
 
 		//Prevent the browser from selecting text.
-		//DOM.eventPreventDefault(event); //Commented out to allow scroll selecting.
+		DOM.eventPreventDefault(event);
 
 		selectedPanel.add(rubberBand);
 
@@ -989,9 +874,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	public void moveRubberBand(Event event){
 		try
 		{
-			if(DOM.getCaptureElement() != getElement())
-				return;
-
 			int width = (event.getClientX()-selectedPanel.getAbsoluteLeft())-x;
 			int height = (event.getClientY()-selectedPanel.getAbsoluteTop())-y;
 
@@ -1008,7 +890,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 			else
 				DOM.setStyleAttribute(rubberBand.getElement(), "height", (event.getClientY()-selectedPanel.getAbsoluteTop())-getRubberTop()+PurcConstants.UNITS);
-
 		}
 		catch(Exception ex){
 			//This exception is intentionally ignored as a rubber band is no big deal
@@ -1026,36 +907,27 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		if(widgets == null)
 			return false;
 
-		CommandList commands = new CommandList(this);
-
 		int pos;
 		for(int index = 0; index < widgets.size(); index++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
 
 			if(dirrection == MOVE_LEFT){
-				commands.add(new MoveWidgetCmd(widget, 1, 0, this));
 				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos-1+PurcConstants.UNITS);
 			}
 			else if(dirrection == MOVE_RIGHT){
-				commands.add(new MoveWidgetCmd(widget, -1, 0, this));
 				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos+1+PurcConstants.UNITS);
 			}
 			else if(dirrection == MOVE_UP){
-				commands.add(new MoveWidgetCmd(widget, 0, 1, this));
 				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos-1+PurcConstants.UNITS);		
 			}
 			else if(dirrection == MOVE_DOWN){
-				commands.add(new MoveWidgetCmd(widget, 0, -1, this));
 				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos+1+PurcConstants.UNITS);
 			}
 		}
-
-		if(commands.size() > 0)
-			Context.getCommandHistory().add(commands);
 
 		return widgets.size() > 0;
 	}
@@ -1071,8 +943,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		if(widgets == null)
 			return false;
 
-		CommandList commands = new CommandList(this);
-
 		int resizedCount = 0;
 
 		int keycode = event.getKeyCode();
@@ -1083,28 +953,17 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			resizedCount++;
 
-			if(keycode == KeyCodes.KEY_LEFT){
-				commands.add(new ResizeWidgetCmd(widget, 0, 0, 1, 0, this));
+			if(keycode == KeyCodes.KEY_LEFT)
 				widget.setWidthInt(widget.getWidthInt()-1);
-			}
-			else if(keycode == KeyCodes.KEY_RIGHT){
-				commands.add(new ResizeWidgetCmd(widget, 0, 0, -1, 0, this));
+			else if(keycode == KeyCodes.KEY_RIGHT)
 				widget.setWidthInt(widget.getWidthInt()+1);
-			}
-			else if(keycode == KeyCodes.KEY_UP){
-				commands.add(new ResizeWidgetCmd(widget, 0, 0, 0, 1, this));
+			else if(keycode == KeyCodes.KEY_UP)
 				widget.setHeightInt(widget.getHeightInt()-1);
-			}
-			else if(keycode == KeyCodes.KEY_DOWN){
-				commands.add(new ResizeWidgetCmd(widget, 0, 0, 0, -1, this));
+			else if(keycode == KeyCodes.KEY_DOWN)
 				widget.setHeightInt(widget.getHeightInt()+1);
-			}
 			else 
 				return false; //Shift press when not in combination with arrow keys is ignored.
 		}
-
-		if(commands.size() > 0)
-			Context.getCommandHistory().add(commands);
 
 		return resizedCount > 0;
 	}
@@ -1215,7 +1074,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected DesignWidgetWrapper addNewWidget(Widget widget, boolean select){
 		stopLabelEdit(false);
 
-		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget, widgetPopup, currentWidgetSelectionListener);
+		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
 
 		if(widget instanceof Label || widget instanceof TextBox || widget instanceof ListBox ||
 				widget instanceof TextArea || widget instanceof Hyperlink || 
@@ -1243,33 +1102,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			selectedDragController.clearSelection();
 			selectedDragController.toggleSelection(wrapper);
 			//widgetSelectionListener.onWidgetSelected(wrapper);
-			onWidgetSelected(wrapper, false);
-
-			Context.getCommandHistory().add(new CommandList(this, new InsertWidgetCmd(wrapper, wrapper.getLayoutNode(), this)));
+			onWidgetSelected(wrapper,false);
 		}
-
 		return wrapper;
-	}
-
-	public void insertWidget(DesignWidgetWrapper widget, AbsolutePanel panel){	
-		selectPanel(panel);
-		stopLabelEdit(false);
-		selectedPanel.add(widget);
-		selectedPanel.setWidgetPosition(widget, widget.getLeftInt(), widget.getTopInt());
-		selectedDragController.selectWidget(widget);
-	}
-
-	private void selectPanel(AbsolutePanel panel){
-		if(panel != selectedPanel){
-			if(this instanceof DesignSurfaceView)
-				((DesignSurfaceView)this).selectPanel(panel);
-		}
-	}
-
-	public void selectWidget(DesignWidgetWrapper widget, AbsolutePanel panel){
-		selectPanel(panel);
-		stopLabelEdit(false);
-		selectedDragController.selectWidget(widget);
 	}
 
 	/**
@@ -1349,7 +1184,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		TextBoxWidget tb = new TextBoxWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25"+PurcConstants.UNITS);
 		DOM.setStyleAttribute(tb.getElement(), "width","200"+PurcConstants.UNITS);
-		return addNewWidget(tb, select);
+		return addNewWidget(tb,select);
 	}
 
 	/**
@@ -1540,8 +1375,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			retWidget = addNewPictureSection(null,null,true);
 		else if(text.equals(LocaleText.get("videoAudio")))
 			retWidget = addNewVideoAudioSection(null,null,true);
-		else if(text.equals(LocaleText.get("logo")))
-			retWidget = addNewPicture(true);
 		/*else if(text.equals(LocaleText.get("searchServer")))
 			retWidget = addNewSearchServerWidget(null,null,true);*/
 
@@ -1571,8 +1404,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		// Positioner is always constrained to the boundary panel
 		// Use 'true' to also constrain the draggable or drag proxy to the boundary panel
-		//selectedDragController.setBehaviorConstrainedToBoundaryPanel(false);
-		selectedDragController.setBehaviorScrollIntoView(true);
+		//dragController.setBehaviorConstrainedToBoundaryPanel(false);
 
 		// Allow multiple widgets to be selected at once using CTRL-click
 		selectedDragController.setBehaviorMultipleSelection(true);
@@ -1629,13 +1461,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			editWidget.stopEditMode();
 
-			String beforeChangeText = editWidget.getText();
-
 			String text = txtEdit.getText();
-			if((text.trim().length() > 0 && editWidget.getWrappedWidget() instanceof Label) || !(editWidget.getWrappedWidget() instanceof Label))
+			if(text.trim().length() > 0)
 				editWidget.setText(text);
-
-			Context.getCommandHistory().add(new ChangeWidgetCmd(editWidget, ChangeWidgetCmd.PROPERTY_TEXT, beforeChangeText, this));
 
 			//selectedPanel.remove(editWidget);
 			//selectedPanel.add(editWidget);
@@ -1775,7 +1603,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	/**
 	 * Un selects all selected widgets, if any, on the current page.
 	 */
-	public void clearSelection(){
+	protected void clearSelection(){
 		selectedDragController.clearSelection();
 	}
 
@@ -1949,11 +1777,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * 
 	 * @param questionDef the question that we are to add the radio buttons for.
 	 * @param vertically set to true to add the radio buttons slopping vertically downwards instead of horizontally.
-	 * @return list of radion button widgets that have been created.
+	 * @return this will always be null.
 	 */
-	protected List<DesignWidgetWrapper> addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
-		List<DesignWidgetWrapper> widgets = new ArrayList<DesignWidgetWrapper>();
-
+	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
 		List<OptionDef> options = questionDef.getOptions();
 
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -1962,33 +1788,27 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			options.add(new OptionDef(1,QuestionDef.FALSE_DISPLAY_VALUE,QuestionDef.FALSE_VALUE,questionDef));
 		}
 
-		if(options != null){
-			for(int i=0; i<options.size(); i++){
-				/*if(i != 0){
+		for(int i=0; i<options.size(); i++){
+			/*if(i != 0){
 				if(vertically)
 					y += 40;
 				else
 					x += 40;
 			}*/
 
-				OptionDef optionDef = (OptionDef)options.get(i);
-				DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget(optionDef.getText()),false);
-				wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
-				wrapper.setFontSize(FormUtil.getDefaultFontSize());
-				wrapper.setBinding(optionDef.getBinding());
-				wrapper.setParentBinding(questionDef.getBinding());
-				wrapper.setText(optionDef.getText());
-				wrapper.setTitle(optionDef.getText());
+			OptionDef optionDef = (OptionDef)options.get(i);
+			DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget(optionDef.getText()),false);
+			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+			wrapper.setFontSize(FormUtil.getDefaultFontSize());
+			wrapper.setBinding(optionDef.getBinding());
+			wrapper.setParentBinding(questionDef.getBinding());
+			wrapper.setText(optionDef.getText());
+			wrapper.setTitle(optionDef.getText());
 
-				if(vertically)
-					y += 40;
-				else
-					x += (optionDef.getText().length() * 14);
-
-				selectedDragController.selectWidget(wrapper);
-
-				widgets.add(wrapper);
-			}
+			if(vertically)
+				y += 40;
+			else
+				x += (optionDef.getText().length() * 14);
 		}
 
 		/*OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
@@ -1999,7 +1819,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		wrapper.setText(optionDef.getText());
 		wrapper.setTitle(optionDef.getText());*/
 
-		return widgets;
+		return null;
 	}
 
 	/**
@@ -2028,9 +1848,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		x = widget.getLeftInt() + selectedPanel.getAbsoluteLeft();
 		y = widget.getTopInt() + selectedPanel.getAbsoluteTop();
 
-		Element layoutNode = widget.getLayoutNode();
-		if(layoutNode != null){
-			layoutNode.getParentNode().removeChild(layoutNode);
+		if(widget.getLayoutNode() != null){
+			widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
 			widget.setLayoutNode(null);
 		}
 
@@ -2038,8 +1857,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		if(widget.getWrappedWidget() instanceof ListBox){
 			selectedPanel.remove(widget);
-			List<DesignWidgetWrapper> widgets = addNewRadioButtonSet(questionDef, vertically);
-			Context.getCommandHistory().add(new ChangeWidgetTypeCmd(widget, layoutNode, widgets, this));
+			addNewRadioButtonSet(questionDef,vertically);
 		}
 		else{
 			//addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
