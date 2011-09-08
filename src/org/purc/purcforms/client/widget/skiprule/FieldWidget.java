@@ -133,7 +133,7 @@ public class FieldWidget extends Composite{
 		horizontalPanel.add(fieldHyperlink);
 		QuestionDef qtn = formDef.getQuestionWithText(txtField.getText());
 		if(qtn != null)
-			itemSelectionListener.onItemSelected(this, qtn, true);
+			itemSelectionListener.onItemSelected(this,qtn);
 	}
 
 	private void setupPopup(){
@@ -161,7 +161,7 @@ public class FieldWidget extends Composite{
 
 	public void selectQuestion(QuestionDef questionDef){
 		fieldHyperlink.setText(questionDef.getText());
-		itemSelectionListener.onItemSelected(this, questionDef, false);
+		itemSelectionListener.onItemSelected(this, questionDef);
 	}
 
 	private void selectFirstQuestion(){
@@ -172,9 +172,6 @@ public class FieldWidget extends Composite{
 	}
 
 	private boolean selectFirstQuestion(Vector questions){
-		if(questions == null)
-			return false;
-		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 

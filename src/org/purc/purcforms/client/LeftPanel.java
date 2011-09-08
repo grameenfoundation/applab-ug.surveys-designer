@@ -79,8 +79,6 @@ public class LeftPanel extends Composite {
 		FormUtil.maximizeWidget(stackPanel);
 
 		initWidget(stackPanel);
-		
-		Context.setLeftPanel(this);
 	}
 
 	/**
@@ -316,13 +314,5 @@ public class LeftPanel extends Composite {
 
 	public void setWidgetPropertyChangeListener(WidgetPropertyChangeListener widgetPropertyChangeListener){
 		widgetPropertiesView.setWidgetPropertyChangeListener(widgetPropertyChangeListener);
-	}
-	
-	public void selectFormFields(){
-		stackPanel.showStack(0);
-	}
-	
-	public void selectWidgetProperties(){
-		stackPanel.showStack(2);
 	}
 }

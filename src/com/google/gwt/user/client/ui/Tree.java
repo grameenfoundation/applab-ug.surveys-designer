@@ -876,10 +876,6 @@ HasCloseHandlers<TreeItem>, SourcesMouseEvents, HasAllMouseHandlers {
 			if (item.getChildCount() > 0
 					&& DOM.isOrHasChild(item.getImageElement(), hElem)) {
 				item.setState(!item.getState(), true);
-				
-				if(getSelectedItem() != item)
-					onSelection(item, true, true);
-				
 				return true;
 			} else if (DOM.isOrHasChild(item.getElement(), hElem)) {
 				onSelection(item, true, !shouldTreeDelegateFocusToElement(hElem));

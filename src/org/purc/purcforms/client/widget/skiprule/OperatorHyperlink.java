@@ -60,12 +60,6 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	/** The operator text: does not start with */
 	public static final String OP_TEXT_NOT_START_WITH = LocaleText.get("doesNotStartWith");
 	
-	/** The operator text: ends with */
-	public static final String OP_TEXT_ENDS_WITH = LocaleText.get("endsWith");
-	
-	/** The operator text: does not end with */
-	public static final String OP_TEXT_NOT_END_WITH = LocaleText.get("doesNotEndWith");
-	
 	/** The operator text: contains */
 	public static final String OP_TEXT_CONTAINS = LocaleText.get("contains");
 	
@@ -168,9 +162,7 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
  		
 		if(dataType == QuestionDef.QTN_TYPE_TEXT ){	  
 			menuBar.addItem(OP_TEXT_STARTS_WITH,true,new SelectItemCommand(OP_TEXT_STARTS_WITH,this));	  
-			menuBar.addItem(OP_TEXT_NOT_START_WITH,true, new SelectItemCommand(OP_TEXT_NOT_START_WITH,this));	
-			menuBar.addItem(OP_TEXT_ENDS_WITH,true,new SelectItemCommand(OP_TEXT_ENDS_WITH,this));	  
-			menuBar.addItem(OP_TEXT_NOT_END_WITH,true, new SelectItemCommand(OP_TEXT_NOT_END_WITH,this));
+			menuBar.addItem(OP_TEXT_NOT_START_WITH,true, new SelectItemCommand(OP_TEXT_NOT_START_WITH,this));	  
 			menuBar.addItem(OP_TEXT_CONTAINS,true,new SelectItemCommand(OP_TEXT_CONTAINS,this));	  
 			menuBar.addItem(OP_TEXT_NOT_CONTAIN,true, new SelectItemCommand(OP_TEXT_NOT_CONTAIN,this));
 			count += 4;
@@ -194,11 +186,11 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	/**
 	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
-	public void onItemSelected(Object sender, Object item, boolean userAction) {
+	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof SelectItemCommand){
 			popup.hide();
 			setText((String)item);
-			itemSelectionListener.onItemSelected(this, fromOperatorText2Value((String)item), userAction);
+			itemSelectionListener.onItemSelected(this, fromOperatorText2Value((String)item));
 		}
 	}
 	
@@ -233,10 +225,6 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			return ModelConstants.OPERATOR_STARTS_WITH;
 		else if(text.equals(OP_TEXT_NOT_START_WITH))
 			return ModelConstants.OPERATOR_NOT_START_WITH;
-		else if(text.equals(OP_TEXT_ENDS_WITH))
-			return ModelConstants.OPERATOR_ENDS_WITH;
-		else if(text.equals(OP_TEXT_NOT_END_WITH))
-			return ModelConstants.OPERATOR_NOT_END_WITH;
 		else if(text.equals(OP_TEXT_CONTAINS))
 			return ModelConstants.OPERATOR_CONTAINS;
 		else if(text.equals(OP_TEXT_NOT_CONTAIN))
@@ -287,10 +275,6 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			operatorText = OP_TEXT_STARTS_WITH;
 		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
 			operatorText = OP_TEXT_NOT_START_WITH;
-		else if(operator == ModelConstants.OPERATOR_ENDS_WITH)
-			operatorText = OP_TEXT_ENDS_WITH;
-		else if(operator == ModelConstants.OPERATOR_NOT_END_WITH)
-			operatorText = OP_TEXT_NOT_END_WITH;
 		else if(operator == ModelConstants.OPERATOR_CONTAINS)
 			operatorText = OP_TEXT_CONTAINS;
 		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
