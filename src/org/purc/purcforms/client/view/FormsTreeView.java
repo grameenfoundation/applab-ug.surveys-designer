@@ -102,6 +102,9 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
     /** The next available question option id. */
     private int nextOptionId = 0;
 
+    /** Current Iteration of rebuildbindings */
+    private int rebuildBindingsCount = 0;
+
     /** The listener to form designer global events. */
     private IFormDesignerListener formDesignerListener;
 
@@ -1447,8 +1450,10 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
     }
 
     private void rebuildPageBindings(int pageNo, PageDef pageDef){
+        rebuildBindingsCount = 0;
         for(int index = 0; index < pageDef.getQuestionCount(); index++)
-            rebuildQuestionBindings(index + 1, pageDef.getQuestionAt(index));
+            //rebuildQuestionBindings(index + 1, pageDef.getQuestionAt(index));
+            rebuildQuestionBindings(pageDef.getQuestionAt(index));
     }
 
     private void rebuildQuestionBindings(int questionNo, QuestionDef questionDef){
@@ -1472,10 +1477,10 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
         }
     }
     
-    private int rbCount = 0;
+    
     private void rebuildQuestionBindings(QuestionDef questionDef) {
-    	rbCount++;
-    	questionDef.setBinding(FormDesignerUtil.getQtnBinding(questionDef.getId(), rbCount));
+        rebuildBindingsCount++;
+        questionDef.setBinding(FormDesignerUtil.getQtnBinding(questionDef.getId(), rebuildBindingsCount));
 
 		int dataType = questionDef.getDataType();
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
@@ -1493,4 +1498,6 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 				rebuildQuestionBindings(repeatQtnsDef.getQuestionAt(index));
 		}
     }
+    
+    
 }

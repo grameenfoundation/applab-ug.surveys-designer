@@ -78,34 +78,34 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private static final byte DT_INDEX_DATE_TIME = 5;
 
 	/** List box index for boolean data type. */
-	private static final byte DT_INDEX_BOOLEAN = 6;
+	//private static final byte DT_INDEX_BOOLEAN = 6;
 
 	/** List box index for single select data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT = 7;
+	private static final byte DT_INDEX_SINGLE_SELECT = 6;
 
 	/** List box index for multiple select data type. */
-	private static final byte DT_INDEX_MULTIPLE_SELECT = 8;
+	private static final byte DT_INDEX_MULTIPLE_SELECT = 7;
 
 	/** List box index for repeat data type. */
-	private static final byte DT_INDEX_REPEAT = 9;
+	private static final byte DT_INDEX_REPEAT = 8;
 
 	/** List box index for image data type. */
-	private static final byte DT_INDEX_IMAGE = 10;
+	private static final byte DT_INDEX_IMAGE = 9;
 
 	/** List box index for video data type. */
-	private static final byte DT_INDEX_VIDEO = 11;
+	private static final byte DT_INDEX_VIDEO = 10;
 
 	/** List box index for audio data type. */
-	private static final byte DT_INDEX_AUDIO = 12;
+	private static final byte DT_INDEX_AUDIO = 11;
 
 	/** List box index for single select dynamic data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 13;
+	//private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 13;
 
 	/** List box index for gps data type. */
-	private static final byte DT_INDEX_GPS = 14;
+	private static final byte DT_INDEX_GPS = 12;
 
 	/** List box index for barcode data type. */
-	private static final byte DT_INDEX_BARCODE = 15;
+	private static final byte DT_INDEX_BARCODE = 13;
 
 	/** Table used for organising widgets in a table format. */
 	private FlexTable table = new FlexTable();
@@ -230,14 +230,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeDate"));
 		cbDataType.addItem(LocaleText.get("qtnTypeTime"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDateTime"));
-		cbDataType.addItem(LocaleText.get("qtnTypeBoolean"));
+		//cbDataType.addItem(LocaleText.get("qtnTypeBoolean"));
 		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelect"));
 		cbDataType.addItem(LocaleText.get("qtnTypeMultSelect"));
 		cbDataType.addItem(LocaleText.get("qtnTypeRepeat"));
 		cbDataType.addItem(LocaleText.get("qtnTypePicture"));
 		cbDataType.addItem(LocaleText.get("qtnTypeVideo"));
 		cbDataType.addItem(LocaleText.get("qtnTypeAudio"));
-		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
+		//cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
 		cbDataType.addItem(LocaleText.get("qtnTypeBarcode"));
 
@@ -768,9 +768,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_INDEX_DATE_TIME:
 			dataType = QuestionDef.QTN_TYPE_DATE_TIME;
 			break;
-		case DT_INDEX_BOOLEAN:
+		/*case DT_INDEX_BOOLEAN:
 			dataType = QuestionDef.QTN_TYPE_BOOLEAN;
-			break;
+			break;*/
 		case DT_INDEX_SINGLE_SELECT:
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE;
 			break;
@@ -789,9 +789,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_INDEX_AUDIO:
 			dataType = QuestionDef.QTN_TYPE_AUDIO;
 			break;
-		case DT_INDEX_SINGLE_SELECT_DYNAMIC:
+		/*case DT_INDEX_SINGLE_SELECT_DYNAMIC:
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
-			break;
+			break;*/
 		case DT_INDEX_GPS:
 			dataType = QuestionDef.QTN_TYPE_GPS;
 			break;
@@ -962,9 +962,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case QuestionDef.QTN_TYPE_DATE:
 			index = DT_INDEX_DATE;
 			break;
-		case QuestionDef.QTN_TYPE_BOOLEAN:
+		/*case QuestionDef.QTN_TYPE_BOOLEAN:
 			index = DT_INDEX_BOOLEAN;
-			break;
+			break;*/
 		case QuestionDef.QTN_TYPE_DATE_TIME:
 			index = DT_INDEX_DATE_TIME;
 			break;
@@ -998,9 +998,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case QuestionDef.QTN_TYPE_AUDIO:
 			index = DT_INDEX_AUDIO;
 			break;
-		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
+		/*case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			index = DT_INDEX_SINGLE_SELECT_DYNAMIC;
-			break;
+			break;*/
 		case QuestionDef.QTN_TYPE_GPS:
 			index = DT_INDEX_GPS;
 			break;
