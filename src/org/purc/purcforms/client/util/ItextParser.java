@@ -69,18 +69,21 @@ public class ItextParser {
         List<Locale> locales = new ArrayList<Locale>(); //New list of locales as it comes form the parsed xform.
         HashMap<String,String> defaultText = null; //Map of default id and itext (for multiple values of the itext node) for the default language.
 
-        //Map of each locale key and map of its id and itext translations.
-        for(int index = 0; index < nodes.getLength(); index++){
-            Element translationNode = (Element)nodes.item(index);
-            String lang = translationNode.getAttribute("lang");
-            String langName = translationNode.getAttribute("lang-name");
-            if(langName == null || langName.trim().length() == 0)
-                langName = lang;
+		HashMap<String, String> textMap = null;
+		
+		//Map of each locale key and map of its id and itext translations.
+		for(int index = 0; index < nodes.getLength(); index++){
+			Element translationNode = (Element)nodes.item(index);
+			String lang = translationNode.getAttribute("lang");
+			String langName = translationNode.getAttribute("lang-name");
+			if(langName == null || langName.trim().length() == 0)
+				langName = lang;
 
             HashMap<String, String> defText = new HashMap<String,String>();
             fillItextMap(translationNode,defText);
 
-            if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0){
+			if( (((Element)nodes.item(index)).getAttribute("default") != null || (index == 0 && Context.getLocale() == null)) 
+					||(defaultText == null && Context.getLocale() != null && Context.getLocale().getKey().equals(lang))){
                 defaultText = defText;
                 Context.setLocale(new Locale(lang, langName));
                 Context.setDefaultLocale(Context.getLocale());
@@ -88,9 +91,11 @@ public class ItextParser {
 
             defaultTextMap.put(lang, defText);
 
-            //create a new locale object for the current translation.
-            locales.add(new Locale(lang, langName));
-        }
+			//create a new locale object for the current translation.
+			locales.add(new Locale(lang, langName));
+			
+			textMap = defText;
+		}
 
         Context.setLocales(locales);
 
@@ -104,9 +109,13 @@ public class ItextParser {
             Element localeXformNode = localeDoc.createElement(LanguageUtil.NODE_NAME_XFORM);
             node.appendChild(localeXformNode);
 
-            localeXformNodeMap.put(locale.getKey(), localeXformNode);
-        }
-
+			addLayoutLocaleText(doc, locale, localeXformNode);
+			localeXformNodeMap.put(locale.getKey(), localeXformNode);
+		}
+			
+		if(defaultText == null)
+			defaultText = textMap;
+		
         translateNodes("label", doc, defaultText);
         translateNodes("hint", doc, defaultText);
         translateNodes("title", doc, defaultText);
@@ -283,6 +292,30 @@ public class ItextParser {
     
     public static boolean isBindNode(Element node){
         return ( node.getNodeName().equalsIgnoreCase(XformConstants.NODE_NAME_BIND_MINUS_PREFIX) ||
-                node.getNodeName().equalsIgnoreCase(XformConstants.NODE_NAME_BIND) );
-    }
+				node.getNodeName().equalsIgnoreCase(XformConstants.NODE_NAME_BIND) );
+	}
+	
+	private static void addLayoutLocaleText(Document doc, Locale locale, Element localeXformNode){
+		NodeList nodes = doc.getElementsByTagName("LanguageText");
+		if(nodes == null || nodes.getLength() == 0)
+			return;
+		
+		for(int index = 0; index < nodes.getLength(); index++){
+			Element node = (Element)nodes.item(index);
+			if(locale.getKey().equalsIgnoreCase(node.getAttribute("lang"))){
+				addLayoutLocaleNode(localeXformNode.getOwnerDocument(), node);
+				break;
+			}
+		}
+	}
+	
+	private static void addLayoutLocaleNode(Document doc, Element langTextNode){
+		NodeList nodes = langTextNode.getElementsByTagName("Form");
+		if(nodes == null || nodes.getLength() == 0)
+			return;
+		
+		Node node = nodes.item(0).cloneNode(true);
+		doc.importNode(node, true);
+		doc.getDocumentElement().appendChild(node);
+	}
 }

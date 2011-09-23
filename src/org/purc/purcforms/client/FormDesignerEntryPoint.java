@@ -7,6 +7,7 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.SaveFileDialog;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -14,12 +15,14 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
+public class FormDesignerEntryPoint implements EntryPoint, ResizeHandler, ClosingHandler {
 
 	/**
 	 * Reference to the form designer widget.
@@ -57,6 +60,8 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			}
 
 			FormUtil.setupUncaughtExceptionHandler();
+			
+			FormUtil.initialize();
 
 			FormDesignerUtil.setDesignerTitle();
 
@@ -82,6 +87,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			RootPanel.getBodyElement().getStyle().setProperty("display", "");
 
 			loadLocales();
+			FormUtil.loadDecimalSeparators();
 			
 			designer = new FormDesignerWidget(true,true,true);
 			
@@ -112,6 +118,9 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			
 			// Hook the window resize event, so that we can adjust the UI.
 			Window.addResizeHandler(this);
+			
+			// Prevent the user from closing accidentally and lose unsaved changes.
+			Window.addWindowClosingHandler(this);
 		}
 		catch(Exception ex){
 			FormUtil.displayException(ex);
@@ -184,7 +193,16 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			
 			locales.add(new Locale(token.substring(0,index).trim(),token.substring(index+1).trim()));
 		}
+
+		//Set the first locale as the default one.
+		Context.setDefaultLocale(locales.get(0));
+		Context.setLocale(Context.getDefaultLocale());
 		
 		Context.setLocales(locales);
+	}
+	
+	public void onWindowClosing(ClosingEvent event){
+		if(SaveFileDialog.isWarnOnClose())
+			event.setMessage("");
 	}
 }

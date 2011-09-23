@@ -41,6 +41,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 
@@ -707,8 +708,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
         }
     }
 
-    public void refresh(Object sender) {
-        refreshObject = sender;
+	public void refresh(Object sender) {
+		if(leftPanel.getSelectedForm() == null)
+			return;
+		
+		refreshObject = sender;
 
         if(isOfflineMode())
             refreshObject();
@@ -827,11 +831,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
         }
     }
 
-    public void saveForm(String xformXml, String layoutXml, String languageXml, String javaScriptSrc){
-        String url = FormUtil.getHostPageBaseURL();
-        url += FormUtil.getFormDefUploadUrlSuffix();
-        url += FormUtil.getFormIdName() + "=" + FormUtil.getFormId();
-        url = FormUtil.appendRandomParameter(url);
+	public void saveForm(String xformXml, String layoutXml, String languageXml, String javaScriptSrc){
+		
+		if(xformXml == null || xformXml.trim().length() == 0){
+			Window.alert("Attempted to save empty form. Please report this to your Administrator");
+			return;
+		}
+		
+		String url = FormUtil.getHostPageBaseURL();
+		url += FormUtil.getFormDefUploadUrlSuffix();
+		url += FormUtil.getFormIdName() + "=" + FormUtil.getFormId();
+		url = FormUtil.appendRandomParameter(url);
 
         RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
 
@@ -981,19 +991,29 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
                         //we completely overwrite the form. eg when they click the open toolbar icon.
                         //with the contents of the xforms source tab, as a way of someone manually
                         //changing the xform.
-                        if(!isOfflineMode() && !overwrite)
-                            formDef.refresh(oldFormDef);
+						if(!isOfflineMode() && !overwrite)
+							formDef.refresh(oldFormDef);
+							
+						if(FormUtil.isJavaRosaSaveFormat() && oldFormDef.getDoc() != null){
+							if(formDef.getModelNode().getElementsByTagName("itext").getLength() == 0){
+								NodeList nodes = oldFormDef.getDoc().getElementsByTagName("itext");
+								if(nodes.getLength() > 0)
+									formDef.getModelNode().appendChild(nodes.item(0));
+							}
+						}
 
                         formDef.updateDoc(false);
-                        xml = formDef.getDoc().toString();
+						xml = formDef.getDoc().toString();
 
-                        formDef.setXformXml(FormUtil.formatXml(xml));
+						formDef.setXformXml(xml/*FormUtil.formatXml(xml)*/);
 
-                        formDef.setLayoutXml(oldFormDef.getLayoutXml());
+						formDef.setLayoutXml(oldFormDef.getLayoutXml());
                         formDef.setLanguageXml(oldFormDef.getLanguageXml());
 
                         leftPanel.refresh(formDef);
-                        centerPanel.refresh();
+						centerPanel.refresh();
+						
+						Context.getCommandHistory().clear();
                     }
                     FormUtil.dlg.hide();
                 }
@@ -1495,5 +1515,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
         }
 
         return true;
-    }
+	}
+	
+	public void undo(){
+		Context.getCommandHistory().undo();
+	}
+	
+	public void redo(){
+		Context.getCommandHistory().redo();
+	}
 }

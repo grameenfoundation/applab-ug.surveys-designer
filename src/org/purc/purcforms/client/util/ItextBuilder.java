@@ -28,11 +28,11 @@ public class ItextBuilder {
     public static final String ATTRIBUTE_NAME_UNIQUE_ID = "uniqueid";
 
 
-    /**
-     * 
-     * @param formDef
-     */
-    public static void build(FormDef formDef){
+	/**
+	 * 
+	 * @param formDef
+	 */
+	public synchronized static void build(FormDef formDef){
 
         Element modelNode = XmlUtil.getNode(formDef.getDoc().getDocumentElement(),"model");
         assert(modelNode != null); //we must have a model in an xform.
@@ -45,8 +45,9 @@ public class ItextBuilder {
         if(locales == null)
             return;
 
-        itextNode = formDef.getDoc().createElement("itext");
-        modelNode.appendChild(itextNode);
+		itextNode = formDef.getDoc().createElement("itext");
+		modelNode.appendChild(itextNode);
+		formDef.setItextNode(itextNode);
 
         HashMap<String,String> xpathIdMap = new HashMap<String,String>();
         HashMap<String,String> languageText = Context.getLanguageText().get(formDef.getId());
@@ -94,11 +95,11 @@ public class ItextBuilder {
     }
 
 
-    private static void build(Document doc, Element languageNode, Locale locale, Element itextNode, boolean addItextAttribute, HashMap<String,String> xpathIdMap, HashMap<String, String> changedXpaths){
-        Element translationNode = doc.createElement("translation");
-        translationNode.setAttribute("lang", locale.getKey());
-        translationNode.setAttribute("lang-name", locale.getName());
-        itextNode.appendChild(translationNode);
+	private synchronized static void build(Document doc, Element languageNode, Locale locale, Element itextNode, boolean addItextAttribute, HashMap<String,String> xpathIdMap, HashMap<String, String> changedXpaths){
+		Element translationNode = doc.createElement("translation");
+		translationNode.setAttribute("lang", locale.getKey());
+		translationNode.setAttribute("lang-name", locale.getName());
+		itextNode.appendChild(translationNode);
 
         //Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
         HashMap<String,String> duplicatesMap = new HashMap<String, String>();
@@ -211,9 +212,9 @@ public class ItextBuilder {
      * @param value the itext value of the given id.
      * @param localeKey the locale key
      */
-    private static void addTextNode(Document doc, Element translationNode, String xpath, String id, String value, String localeKey, String uniqueId){
-        if(value.trim().length() == 0)
-            return;
+	private synchronized static void addTextNode(Document doc, Element translationNode, String xpath, String id, String value, String localeKey, String uniqueId){
+		if(value.trim().length() == 0)
+			return;
 
         Element textNode = doc.createElement("text");
         translationNode.appendChild(textNode);
@@ -227,13 +228,13 @@ public class ItextBuilder {
     }
 
 
-    /**
-     * Removes all child nodes for a give  node.
-     * 
-     * @param node the node whose child nodes to remove.
-     */
-    private static void removeAllChildNodes(Element node){
-        while(node.getChildNodes().getLength() > 0)
-            node.removeChild(node.getChildNodes().item(0));
-    }
+	/**
+	 * Removes all child nodes for a give  node.
+	 * 
+	 * @param node the node whose child nodes to remove.
+	 */
+	private synchronized static void removeAllChildNodes(Element node){
+		while(node.getChildNodes().getLength() > 0)
+			node.removeChild(node.getChildNodes().item(0));
+	}
 }

@@ -233,7 +233,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         
         //Set a 3 pixels spacing between tool bar buttons.
         panel.setSpacing(3);
-    }
+		
+		Context.getCommandHistory().setUndoButton(btnUndo);
+		Context.getCommandHistory().setRedoButton(btnRedo);
+	}
     
     /**
      * Setup button click event handlers.
@@ -295,7 +298,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         
         btnRefresh.addClickHandler(new ClickHandler(){
             public void onClick(ClickEvent event){controller.refresh(this);}});
-    }
+		
+		btnUndo.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.undo();}});
+		
+		btnRedo.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.redo();}});
+	}
     
     /**
      * Populates the locale drop down with a list of locales supported by the form designer.
