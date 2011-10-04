@@ -250,6 +250,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
         FormUtil.dlg.setText(LocaleText.get("openingForm"));
         FormUtil.dlg.center();
+        if (readonly) {
+            Window.alert("This survey is in readonly mode, You can only make changes to the text and labels.");
+        }
 
         DeferredCommand.addCommand(new Command(){
             public void execute() {
