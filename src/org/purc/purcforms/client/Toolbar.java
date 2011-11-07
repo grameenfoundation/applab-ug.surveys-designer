@@ -191,7 +191,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         panel.add(btnPaste);
         
         panel.add(separatorWidget);
-        panel.add(btnRefresh);
+        //getting rid of these as we do not use them yet their presence
+        // is confusing to users
+       /* panel.add(btnRefresh);
         
         panel.add(separatorWidget);
         panel.add(btnAlignLeft);
@@ -206,7 +208,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         
         panel.add(separatorWidget);
         panel.add(btnUndo);
-        panel.add(btnRedo);
+        panel.add(btnRedo);*/
         
         Label label = new Label(FormDesignerUtil.getTitle());
         panel.add(label);
