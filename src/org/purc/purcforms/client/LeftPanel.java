@@ -72,8 +72,9 @@ public class LeftPanel extends Composite {
 		paletteView =  new PaletteView(images);
 
 		add(images,formsTreeView , images.tasksgroup(), LocaleText.get("forms"));
-		add(images,paletteView , images.tasksgroup(),LocaleText.get("palette"));
-		add(images,widgetPropertiesView , images.filtersgroup(), LocaleText.get("widgetProperties"));
+		//commenting these out as we do not use the widget properties or the palette
+		//add(images,paletteView , images.tasksgroup(),LocaleText.get("palette"));
+		//add(images,widgetPropertiesView , images.filtersgroup(), LocaleText.get("widgetProperties"));
 
 		formsTreeView.addFormSelectionListener(widgetPropertiesView);
 		FormUtil.maximizeWidget(stackPanel);
