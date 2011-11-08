@@ -82,7 +82,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	private boolean showLayoutXml = true;
 	private boolean showLanguageXml = true;
 	private boolean showModelXml = true;
-	
+	private boolean showDesignSurface = true;
+	private boolean showPreview = true;
 	private boolean refreshWidgets = true;
 
 
@@ -992,6 +993,14 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			showXformsSource = false;
 		}
 	}
+	
+	public void removePreviewTab() {
+		if (showPreview) {
+			tabs.remove(SELECTED_INDEX_PREVIEW);
+			--SELECTED_INDEX_MODEL_XML;
+			showPreview = false;
+		}
+	}
 
 	public void removeJavaScriptSourceTab(){
 		if(showJavaScriptSource){
@@ -1026,6 +1035,19 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			showModelXml = false;
 		}
 	}
+	
+	
+    public void removeDesignSurfaceTab() {
+        if (showDesignSurface) {
+            tabs.remove(SELECTED_INDEX_DESIGN_SURFACE);
+            --SELECTED_INDEX_JAVASCRIPT_SOURCE;
+            --SELECTED_INDEX_LAYOUT_XML;
+            --SELECTED_INDEX_LANGUAGE_XML;
+            --SELECTED_INDEX_PREVIEW;
+            --SELECTED_INDEX_MODEL_XML;
+            showDesignSurface = false;
+        }
+    }
 
 
 	public WidgetPropertyChangeListener getWidgetPropertyChangeListener(){

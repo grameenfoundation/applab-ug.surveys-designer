@@ -136,26 +136,34 @@ public class FormDesignerEntryPoint implements EntryPoint, ResizeHandler, Closin
 		}
 	}
 	
-	private void updateTabs(){
-		String s = FormUtil.getDivValue("showXformsSourceTab");
-		if(!("1".equals(s) || "true".equals(s)))
+	private void updateTabs() {
+		boolean showTab = FormUtil.isShowXformsSourceTab();
+		if (!(showTab))
 			designer.removeXformSourceTab();
 		
-		s = FormUtil.getDivValue("showLayoutXmlTab");
-		if(!("1".equals(s) || "true".equals(s)))
+		showTab = FormUtil.isShowLayoutXmlTab();
+		if (!(showTab))
 			designer.removeLayoutXmlTab();
 		
-		s = FormUtil.getDivValue("showLanguageTab");
-		if(!("1".equals(s) || "true".equals(s)))
+		showTab = FormUtil.isShowLanguageTab();
+		if (!(showTab))
 			designer.removeLanguageTab();
 		
-		s = FormUtil.getDivValue("showModelXmlTab");
-		if(!("1".equals(s) || "true".equals(s)))
+		showTab = FormUtil.isShowModelXmlTab();
+		if (!(showTab))
 			designer.removeModelXmlTab();
 		
-		s = FormUtil.getDivValue("showJavaScriptTab");
-		if(!("1".equals(s) || "true".equals(s)))
+		showTab = FormUtil.isShowJavaScriptTab();
+		if (!(showTab))
 			designer.removeJavaScriptTab();
+		
+		showTab = FormUtil.isShowDesignSurfaceTab();
+		if (!(showTab))
+			designer.removeDesignSurfaceTab();
+		
+		showTab = FormUtil.isShowPreviewTab();
+		if(!(showTab))
+			designer.removePreviewTab();
 	}
 	
 	public void onResize(ResizeEvent event){

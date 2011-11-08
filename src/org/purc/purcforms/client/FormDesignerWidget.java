@@ -425,11 +425,9 @@ public class FormDesignerWidget extends Composite{
 		centerPanel.removeXformSourceTab();
 	}
 
-
 	public void removeLayoutXmlTab(){
 		centerPanel.removeLayoutXmlTab();
 	}
-
 
 	public void removeModelXmlTab(){
 		centerPanel.removeModelXmlTab();
@@ -437,5 +435,13 @@ public class FormDesignerWidget extends Composite{
 
 	public void removeJavaScriptTab(){
 		centerPanel.removeJavaScriptSourceTab();
+	}
+	
+	public void removePreviewTab(){
+		centerPanel.removePreviewTab();
+	}
+	
+	public void removeDesignSurfaceTab(){
+		centerPanel.removeDesignSurfaceTab();
 	}
 }
