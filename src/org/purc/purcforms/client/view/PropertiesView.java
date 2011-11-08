@@ -269,7 +269,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs = new DecoratedTabPanel();
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
-		tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
+        if (FormUtil.isShowDynamicListsTab()) {
+            tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
+        }
 
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
