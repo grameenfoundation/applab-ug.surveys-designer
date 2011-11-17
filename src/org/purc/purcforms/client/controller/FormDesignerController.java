@@ -406,6 +406,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
                     //TODO Need to preserve user's model and any others.
                     String xml = null;
                     final FormDef formDef = obj;
+                    //CKW-2310 change to always make purcforms rebuild xml from scratch
+                    formDef.setDoc(null);
                     if(formDef.getDoc() == null){
                         if(FormUtil.isJavaRosaSaveFormat())
                             xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);  
