@@ -118,7 +118,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
      */
     private void setupToolbar(){
         btnNewForm = new PushButton(FormUtil.createImage(images.newform()));
-        btnOpenForm = new PushButton(FormUtil.createImage(images.open()));
+        btnOpenForm = new PushButton(FormUtil.createImage(images.refresh()));
         btnSaveForm = new PushButton(FormUtil.createImage(images.save()));
         
         btnAddNewItem = new PushButton(FormUtil.createImage(images.add()));
@@ -145,7 +145,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         
         btnNewForm.setTitle(LocaleText.get("newForm"));
         btnSaveForm.setTitle(LocaleText.get("save"));
-        btnOpenForm.setTitle(LocaleText.get("open"));
+        btnOpenForm.setTitle(LocaleText.get("refresh"));
         
         btnAddNewItem.setTitle(LocaleText.get("addNew"));
         btnAddNewChildItem.setTitle(LocaleText.get("addNewChild"));
