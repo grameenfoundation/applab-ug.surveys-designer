@@ -206,9 +206,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
         panel.add(btnSameHeight);
         panel.add(btnSameSize);
         
-        panel.add(separatorWidget);
+        panel.add(separatorWidget);*/
         panel.add(btnUndo);
-        panel.add(btnRedo);*/
+        panel.add(btnRedo);
         
         Label label = new Label(FormDesignerUtil.getTitle());
         panel.add(label);
