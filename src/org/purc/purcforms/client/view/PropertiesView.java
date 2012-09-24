@@ -106,6 +106,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** List box index for barcode data type. */
 	private static final byte DT_INDEX_BARCODE = 13;
+	
+	/** List box index for long number data type. */
+	private static final byte DT_INDEX_LONGNUMBER = 14;
 
 	/** Table used for organising widgets in a table format. */
 	private FlexTable table = new FlexTable();
@@ -244,6 +247,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
 		cbDataType.addItem(LocaleText.get("qtnTypeBarcode"));
+		cbDataType.addItem(LocaleText.get("qtnTypeLongNumber"));
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -869,6 +873,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_INDEX_BARCODE:
 			dataType = QuestionDef.QTN_TYPE_BARCODE;
 			break;
+		case DT_INDEX_LONGNUMBER:
+			dataType = QuestionDef.QTN_TYPE_LONGNUMBER;
+			break;
 		}
 		
 		return dataType;
@@ -1092,6 +1099,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_BARCODE:
 			index = DT_INDEX_BARCODE;
+			break;
+		case QuestionDef.QTN_TYPE_LONGNUMBER:
+			index = DT_INDEX_LONGNUMBER;
 			break;
 		}
 
